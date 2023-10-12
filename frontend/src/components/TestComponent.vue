@@ -9,7 +9,8 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="actions">
-      <v-btn variant="elevated" color="primary" @click="action" :disabled="!isPersonValid">Action</v-btn>
+      <v-btn variant="elevated" color="primary" @click="action1" :disabled="!isPersonValid">Action1</v-btn>
+      <v-btn variant="elevated" color="secondary">Action2</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -19,9 +20,9 @@ export default {
   name: 'TestComponent',
   mounted: () => console.log('TestComponent mounted'),
   methods: {
-    action() {
+    action1() {
       this.person.yearOfBirth = parseInt(this.person.yearOfBirth)
-      console.log('Action was performed on person', this.person)
+      console.log('Action1 was performed on person', this.person)
     }
   },
   data() {
@@ -43,6 +44,9 @@ export default {
 
 <style scoped>
 .box {
-  width: 400px;
+  width: 500px;
+}
+.actions {
+  float: right;
 }
 </style>
