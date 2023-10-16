@@ -16,11 +16,18 @@ app.use(bodyParser.json())
 
 app.use(express.static(config.frontend))
 
-let x = 0
-app.use('/test', (req, res) => {
-    res.json({ test: ++x })
+let person = {
+    firstName: '',
+    lastName: '',
+    birthDate: new Date().toJSON().slice(0, 10)
+}
+
+app.post('/person', (req, res) => {
+    req.body.birthDate = new Date(req.body.birthDate)
+    console.log(req.body)
+    res.json(person)
 })
 
 app.listen(config.port, () => {
-    console.log('Backend listening on ', config.port)
+    console.log('Backend listening on port', config.port)
 })
