@@ -12,7 +12,11 @@ const app = express()
 
 app.use(morgan('tiny'))
 app.use(cors())
+
 app.use(bodyParser.json())
+app.use((err, req, res, next) => {
+    res.status(400).json({ error: err.message })
+})
 
 app.use(express.static(config.frontend))
 
