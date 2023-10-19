@@ -20,7 +20,7 @@
           <tr v-for="(person, index) in persons" :key="index">
             <td>{{ person.firstName }}</td>
             <td>{{ person.lastName }}</td>
-            <td>{{ person.birthDate.slice(0, 10) }}</td>
+            <td>{{ new Date(person.birthDate).toLocaleDateString() }}</td>
           </tr>
         </tbody>
       </v-table>
