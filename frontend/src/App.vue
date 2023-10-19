@@ -1,6 +1,10 @@
 <template>
   <div>
-    <PersonEditor/>
+    <div class="onerow">
+      <PersonEditor/>
+      <PersonsLister/>
+    </div>
+    <br/>
     <hr/>
     <div class="footer">Footer</div>
   </div>
@@ -8,11 +12,12 @@
 
 <script>
 import PersonEditor from './components/PersonEditor.vue'
+import PersonsLister from './components/PersonsLister.vue'
 
 export default {
   name: 'App',
   components: {
-    PersonEditor
+    PersonEditor, PersonsLister
   }
 }
 </script>
@@ -21,6 +26,10 @@ export default {
 #app {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   margin: 10px 30px;
+}
+.onerow {
+  display: flex;
+  gap: 5px;
 }
 .footer {
   font-size: small;

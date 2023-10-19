@@ -20,16 +20,16 @@ app.use((err, req, res, next) => {
 
 app.use(express.static(config.frontend))
 
-let person = {
-    firstName: '',
-    lastName: '',
-    birthDate: new Date().toJSON().slice(0, 10)
-}
+let persons = []
+
+app.get('/person', (req, res) => {
+    res.json(persons)
+})
 
 app.post('/person', (req, res) => {
     req.body.birthDate = new Date(req.body.birthDate)
-    console.log(req.body)
-    res.json(person)
+    persons.push(req.body)
+    res.json(req.body)
 })
 
 app.listen(config.port, () => {

@@ -26,11 +26,11 @@ export default {
         .then((res) => {
           res.json()
             .then((data) => {
-              alert(JSON.stringify(data))
+              console.log('Added', JSON.stringify(data))
             })
-            .catch((err) => alert(err.message))
+            .catch((err) => console.error(err.message))
         })
-        .catch((err) => alert(err.message))
+        .catch((err) => console.error(err.message))
     }
   },
   data() {
