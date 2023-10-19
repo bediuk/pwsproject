@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="onerow">
-      <PersonEditor/>
+      <PersonEditor @data-added="onDataAdded"/>
       <PersonsLister/>
     </div>
     <br/>
@@ -18,6 +18,11 @@ export default {
   name: 'App',
   components: {
     PersonEditor, PersonsLister
+  },
+  methods: {
+    onDataAdded() {
+      console.log('Data was just added to the persons collection')
+    }
   }
 }
 </script>
