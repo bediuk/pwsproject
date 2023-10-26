@@ -21,7 +21,6 @@ export default {
   },
   methods: {
     onDataAdded() {
-      console.log('Data was just added to the persons collection')
       this.$refs.personsListerRef.retrieve()
     }
   }

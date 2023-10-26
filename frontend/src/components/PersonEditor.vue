@@ -26,9 +26,8 @@ export default {
         body: JSON.stringify(this.person) })
         .then((res) => {
           res.json()
-            .then((data) => {
+            .then(() => {
               this.$emit('dataAdded')
-              console.log('Added', JSON.stringify(data))
             })
             .catch((err) => console.error(err.message))
         })
