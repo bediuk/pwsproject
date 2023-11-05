@@ -2,7 +2,7 @@
   <v-card class="box" variant="outlined">
     <v-card-title>Persons</v-card-title>
     <v-card-text>
-      <v-table density="compact">
+      <v-table density="compact" hover>
         <thead>
           <tr>
             <th class="text-left">
@@ -17,7 +17,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(person, index) in persons" :key="index">
+          <tr v-for="(person, index) in persons" :key="index" @click="click(person)">
             <td>{{ person.firstName }}</td>
             <td>{{ person.lastName }}</td>
             <td>{{ new Date(person.birthDate).toLocaleDateString() }}</td>
@@ -31,6 +31,7 @@
 <script>
 export default {
   name: 'PersonsLister',
+  emits: [ 'dataClicked' ],
   methods: {
     retrieve() {
       fetch('/person', {
@@ -43,6 +44,9 @@ export default {
             .catch((err) => alert(err.message))
         })
         .catch((err) => alert(err.message))
+    },
+    click(row) {
+      this.$emit('dataClicked', row)
     }
   },
   data() {

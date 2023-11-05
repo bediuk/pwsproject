@@ -32,6 +32,9 @@ export default {
             .catch((err) => console.error(err.message))
         })
         .catch((err) => console.error(err.message))
+    },
+    fill(data) {
+      console.log(data)
     }
   },
   data() {
