@@ -60,7 +60,7 @@ app.put('/person', (req, res) => {
     Person.findOneAndUpdate({ _id }, req.body, { new: true })
     .then(updated => {
         if(updated) {
-            res.json(data)
+            res.json(updated)
         } else {
             res.status(404).json({ error: 'No such object' })
         }
