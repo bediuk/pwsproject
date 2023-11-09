@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="onerow">
-      <PersonEditor @data-added="onDataAdded" ref="personEditorRef"/>
+      <PersonEditor @data-changed ="ondataChanged" ref="personEditorRef"/>
       <PersonsLister @data-clicked="onDataClicked" ref="personsListerRef"/>
     </div>
     <br/>
@@ -20,7 +20,7 @@ export default {
     PersonEditor, PersonsLister
   },
   methods: {
-    onDataAdded() {
+    ondataChanged() {
       this.$refs.personsListerRef.retrieve()
     },
     onDataClicked(data) {

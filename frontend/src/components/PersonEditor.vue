@@ -9,7 +9,9 @@
       </v-form>
     </v-card-text>
     <v-card-actions class="actions">
-      <v-btn variant="elevated" color="success" @click="send" :disabled="!isPersonValid">Send</v-btn>
+      <v-btn variant="elevated" color="success" @click="add" :disabled="!isPersonValid">Add</v-btn>
+      <v-btn variant="elevated" color="success" @click="modify" :disabled="!isPersonValid || !id">Modify</v-btn>
+      <v-btn variant="elevated" color="error" @click="remove" :disabled="!isPersonValid || !id">Remove</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -17,9 +19,9 @@
 <script>
 export default {
   name: 'PersonEditor',
-  emits: [ 'dataAdded' ],
+  emits: [ 'dataChanged' ],
   methods: {
-    send() {
+    add() {
       fetch('/person', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -27,14 +29,43 @@ export default {
         .then((res) => {
           res.json()
             .then(() => {
-              this.$emit('dataAdded')
+              this.$emit('dataChanged')
+            })
+            .catch((err) => console.error(err.message))
+        })
+        .catch((err) => console.error(err.message))
+    },
+    modify() {
+      fetch('/person?_id=' + this.id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.person) })
+        .then((res) => {
+          res.json()
+            .then(() => {
+              this.$emit('dataChanged')
+            })
+            .catch((err) => console.error(err.message))
+        })
+        .catch((err) => console.error(err.message))
+    },
+    remove() {
+      fetch('/person?_id=' + this.id, {
+        method: 'DELETE' })
+        .then((res) => {
+          res.json()
+            .then(() => {
+              this.$emit('dataChanged')
             })
             .catch((err) => console.error(err.message))
         })
         .catch((err) => console.error(err.message))
     },
     fill(data) {
-      console.log(data)
+      this.person.firstName = data.firstName
+      this.person.lastName = data.lastName
+      this.person.birthDate = data.birthDate
+      this.id = data._id
     }
   },
   data() {
@@ -48,7 +79,8 @@ export default {
         firstName: '',
         lastName: '',
         birthDate: new Date().toJSON().slice(0, 10)
-      }     
+      },
+      id: null     
     }
   } 
 }

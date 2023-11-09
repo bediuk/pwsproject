@@ -5,6 +5,7 @@
       <v-table density="compact" hover>
         <thead>
           <tr>
+            <th></th>
             <th class="text-left">
               First name
             </th>
@@ -18,6 +19,7 @@
         </thead>
         <tbody>
           <tr v-for="(person, index) in persons" :key="index" @click="click(person)">
+            <td><v-chip v-show="person._id == id" prepend-icon="mdi-checkbox-marked" variant="plain" size="x-small"></v-chip></td>
             <td>{{ person.firstName }}</td>
             <td>{{ person.lastName }}</td>
             <td>{{ new Date(person.birthDate).toLocaleDateString() }}</td>
@@ -46,12 +48,14 @@ export default {
         .catch((err) => alert(err.message))
     },
     click(row) {
+      this.id = row._id
       this.$emit('dataClicked', row)
     }
   },
   data() {
     return {
-      persons: []
+      persons: [],
+      id: null
     }
   },
   mounted() {
