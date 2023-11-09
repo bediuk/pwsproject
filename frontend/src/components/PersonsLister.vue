@@ -1,41 +1,52 @@
 <template>
-  <v-card class="box" variant="outlined">
-    <v-card-title>Persons</v-card-title>
-    <v-card-text>
-      <v-table density="compact" hover>
-        <thead>
-          <tr>
-            <th></th>
-            <th class="text-left">
-              First name
-            </th>
-            <th class="text-left">
-              Last name
-            </th>
-            <th class="text-left">
-              Birth date
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(person, index) in persons" :key="index" @click="click(person)">
-            <td><v-chip v-show="person._id == id" prepend-icon="mdi-checkbox-marked" variant="plain" size="x-small"></v-chip></td>
-            <td>{{ person.firstName }}</td>
-            <td>{{ person.lastName }}</td>
-            <td>{{ new Date(person.birthDate).toLocaleDateString() }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-card-text>
-  </v-card>
+  <div>
+    <v-card>
+      <v-card-title>Persons</v-card-title>
+      <v-card-text>
+        <v-table density="compact" hover>
+          <thead>
+            <tr>
+              <th class="text-left">
+                First name
+              </th>
+              <th class="text-left">
+                Last name
+              </th>
+              <th class="text-left">
+                Birth date
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(person, index) in persons" :key="index" @click="click(person)">
+              <td>{{ person.firstName }}</td>
+              <td>{{ person.lastName }}</td>
+              <td>{{ new Date(person.birthDate).toLocaleDateString() }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn variant="elevated" color="success" @click="add">Add</v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-dialog v-model="editor" width="50%">
+      <PersonEditor :id="id" @dataChanged="retrieve" @cancel="cancel"/>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
+import PersonEditor from './PersonEditor.vue'
+
 export default {
   name: 'PersonsLister',
-  emits: [ 'dataClicked' ],
+  components: { PersonEditor },
   methods: {
     retrieve() {
+      this.id = null
+      this.editor = false
       fetch('/person', {
         method: 'GET' })
         .then((res) => {
@@ -43,17 +54,26 @@ export default {
             .then((data) => {
               this.persons = data
             })
-            .catch((err) => alert(err.message))
+            .catch(err => console.error(err.message))
         })
-        .catch((err) => alert(err.message))
+        .catch(err => console.error(err.message))
+    },
+    add() {
+      this.id = null
+      this.editor = true
     },
     click(row) {
       this.id = row._id
-      this.$emit('dataClicked', row)
+      this.editor = true
+    },
+    cancel() {
+      this.id = null
+      this.editor = false
     }
   },
   data() {
     return {
+      editor: false,
       persons: [],
       id: null
     }
@@ -63,9 +83,3 @@ export default {
   } 
 }
 </script>
-
-<style scoped>
-.box {
-  width: 500px;
-}
-</style>

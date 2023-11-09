@@ -35,13 +35,28 @@ const Person = new mongoose.model('Person', new mongoose.Schema({
 }))
 
 app.get('/person', (req, res) => {
-    Person.find()
-    .then(data => {
-        res.json(data)
-    })
-    .catch(err => {
-        res.status(408).json({ error: err.message })
-    })
+    const _id = req.query._id
+    if(_id) {
+        Person.findOne({ _id })
+        .then(data => {
+            if(data) {
+                res.json(data)
+            } else {
+                res.status(404).json({ error: 'No such object' })
+            }
+        })
+        .catch(err => {
+            res.status(408).json({ error: err.message })
+        })
+    } else {
+        Person.find()
+        .then(data => {
+            res.json(data)
+        })
+        .catch(err => {
+            res.status(408).json({ error: err.message })
+        })
+    }
 })
 
 app.post('/person', (req, res) => {
