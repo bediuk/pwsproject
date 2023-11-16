@@ -12,8 +12,11 @@
               <th class="text-left">
                 Last name
               </th>
-              <th class="text-left">
+              <th class="text-right">
                 Birth date
+              </th>
+              <th class="text-left">
+                Education
               </th>
             </tr>
           </thead>
@@ -21,7 +24,8 @@
             <tr v-for="(person, index) in persons" :key="index" @click="click(person)">
               <td>{{ person.firstName }}</td>
               <td>{{ person.lastName }}</td>
-              <td>{{ new Date(person.birthDate).toLocaleDateString() }}</td>
+              <td class="text-right">{{ new Date(person.birthDate).toLocaleDateString() }}</td>
+              <td><v-chip>{{ [ 'primary', 'secondary', 'high' ][person.education] }}</v-chip></td>
             </tr>
           </tbody>
         </v-table>

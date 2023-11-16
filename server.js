@@ -29,9 +29,11 @@ app.use(express.static(config.frontend))
 const Person = new mongoose.model('Person', new mongoose.Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    birthDate: { type: Date, required: true, transform: v => v.toISOString().slice(0, 10) }
+    birthDate: { type: Date, required: true, transform: v => v.toISOString().slice(0, 10) },
+    education: { type: Number, required: false, enum: [ 0, 1, 2 ], default: 0 }
 }, {
-    versionKey: false
+    versionKey: false,
+    additionalProperties: false
 }))
 
 app.get('/person', (req, res) => {
@@ -72,7 +74,7 @@ app.post('/person', (req, res) => {
 
 app.put('/person', (req, res) => {
     const _id = req.query._id
-    Person.findOneAndUpdate({ _id }, req.body, { new: true })
+    Person.findOneAndUpdate({ _id }, req.body, { new: true, runValidators: true })
     .then(updated => {
         if(updated) {
             res.json(updated)
