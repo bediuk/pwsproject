@@ -51,7 +51,23 @@ app.get('/person', (req, res) => {
             res.status(408).json({ error: err.message })
         })
     } else {
-        Person.find()
+        let aggregation = [
+            { $sort: { lastName: 1, firstName: 1 }}
+        ]
+        req.query.search
+        aggregation.push({
+            $match: { $or: [
+                { firstName: { $regex: new RegExp(req.query.search, 'i') } },
+                { lastName: { $regex: new RegExp(req.query.search, 'i') } }
+            ]}
+        })
+        aggregation.push({
+            $skip: parseInt(req.query.skip)
+        })
+        aggregation.push({
+            $limit: parseInt(req.query.limit)
+        })
+        Person.aggregate(aggregation)
         .then(data => {
             res.json(data)
         })
