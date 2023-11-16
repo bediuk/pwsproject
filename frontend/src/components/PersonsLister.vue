@@ -3,9 +3,19 @@
     <v-card>
       <v-card-title>Persons</v-card-title>
       <v-card-subtitle>
-        <v-text-field variant="solo" label="Search" v-model="search" @input="retrieve"></v-text-field>
-        <v-text-field variant="solo" type="number" label="Skip" v-model="skip" @input="retrieve"></v-text-field>
-        <v-text-field variant="solo" type="number" label="Limit" v-model="limit" @input="retrieve"></v-text-field>
+        <v-container>
+          <v-row>
+            <v-col>
+              <v-text-field variant="solo" label="Search" v-model="search" @input="retrieve"></v-text-field>
+            </v-col>
+            <v-col cols="1">
+              <v-text-field variant="solo" type="number" label="Skip" v-model="skip" @input="retrieve" cols="1"></v-text-field>
+            </v-col>
+            <v-col cols="1">
+              <v-text-field variant="solo" type="number" label="Limit" v-model="limit" @input="retrieve"></v-text-field>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-card-subtitle>
       <v-card-text>
         <v-table density="compact" hover>

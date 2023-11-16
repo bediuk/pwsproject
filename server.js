@@ -52,21 +52,14 @@ app.get('/person', (req, res) => {
         })
     } else {
         let aggregation = [
-            { $sort: { lastName: 1, firstName: 1 }}
-        ]
-        req.query.search
-        aggregation.push({
-            $match: { $or: [
+            { $sort: { lastName: 1, firstName: 1 }},
+            { $match: { $or: [
                 { firstName: { $regex: new RegExp(req.query.search, 'i') } },
                 { lastName: { $regex: new RegExp(req.query.search, 'i') } }
-            ]}
-        })
-        aggregation.push({
-            $skip: parseInt(req.query.skip)
-        })
-        aggregation.push({
-            $limit: parseInt(req.query.limit)
-        })
+            ]}},
+            { $skip: parseInt(req.query.skip) || 0 },
+            { $limit: parseInt(req.query.limit) || 10 }
+        ]
         Person.aggregate(aggregation)
         .then(data => {
             res.json(data)
