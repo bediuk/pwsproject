@@ -8,6 +8,10 @@
             <v-col>
               <v-text-field variant="solo" label="Search" v-model="search" @input="retrieve"></v-text-field>
             </v-col>
+            <v-col cols="3">
+              <v-select v-model="education" label="Education" :items="[ { value: 0, title: 'primary' }, { value: 1, title: 'secondary' }, { value: 2, title: 'high' } ]" chips multiple @update:modelValue="retrieve">
+              </v-select>
+            </v-col>
             <v-col cols="1">
               <v-text-field variant="solo" type="number" label="Skip" v-model="skip" @input="retrieve" cols="1"></v-text-field>
             </v-col>
@@ -66,7 +70,7 @@ export default {
     retrieve() {
       this.id = null
       this.editor = false
-      fetch('/person?search=' + this.search + '&skip=' + this.skip + '&limit=' + this.limit, {
+      fetch('/person?search=' + this.search + '&education=' + JSON.stringify(this.education) + '&skip=' + this.skip + '&limit=' + this.limit, {
         method: 'GET' })
         .then((res) => {
           res.json()
@@ -96,6 +100,7 @@ export default {
       persons: [],
       id: null,
       search: '',
+      education: [ 0, 1, 2 ],
       skip: 0,
       limit: 5
     }
