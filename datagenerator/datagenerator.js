@@ -24,17 +24,11 @@ const Person = new mongoose.model('Person', new mongoose.Schema({
     additionalProperties: false
 }))
 
-let remainingToSave = NumOfPersons
-
-mongoose.connect(config.dbUrl)
-.then(() => {
-    console.log('Database connected')
+const generateData = async deleteExisting => {
     if(deleteExisting) {
-        console.log('Dropping collection "%s"', Person.collection.name)
-        if(!Person.collection.drop()) {
-            console.error('Drop failed')
-            process.exit(0)
-        }
+        console.log('Delete existing people...')
+        let count = (await Person.deleteMany({})).deletedCount
+        console.log(count + ' done')
     }
     console.log('Generate and save %d persons', NumOfPersons)
     for(let i = 0; i < NumOfPersons; i++) {
@@ -44,18 +38,16 @@ mongoose.connect(config.dbUrl)
             birthDate: faker.date.birthdate(),
             education: Math.floor(Math.random() * 3)
         })
-        person.save()
-        .then(saved => {
-            console.log(JSON.stringify(saved), 'saved')
-            remainingToSave--
-            if(!remainingToSave) {
-                console.log('Finished')
-            }  
-        })
-        .catch(err => {
-            console.error(err.message)
-            process.exit(0)
-        })
+        await person.save()
+        process.stdout.write('\r' + (i + 1) + ' ')
     }
+    console.log('done')
+    process.exit(0)
+}
+
+mongoose.connect(config.dbUrl)
+.then(() => {
+    console.log('Database connected')
+    generateData(deleteExisting)
 })
 .catch(err => console.error(err.message))
