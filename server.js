@@ -56,10 +56,16 @@ app.get('/person', (req, res) => {
             { $match: { $or: [
                 { firstName: { $regex: new RegExp(req.query.search, 'i') } },
                 { lastName: { $regex: new RegExp(req.query.search, 'i') } }
-            ]}},
-            { $skip: parseInt(req.query.skip) || 0 },
-            { $limit: parseInt(req.query.limit) || 10 }
+            ]}}
         ]
+        try {
+            let education = JSON.parse(req.query.education)
+            if(Array.isArray(education)) {
+                aggregation.push({ $match: { education: { $in: education } } })    
+            }
+        } catch(err) {}
+        aggregation.push({ $skip: parseInt(req.query.skip) || 0 })
+        aggregation.push({ $limit: parseInt(req.query.limit) || 10 })
         Person.aggregate(aggregation)
         .then(data => {
             res.json(data)
