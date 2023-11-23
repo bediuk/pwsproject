@@ -1,16 +1,35 @@
 <template>
-  <div>
-    <PersonsLister/>
-  </div>
+  <v-app>
+    
+    <v-navigation-drawer expand-on-hover rail permanent>
+      
+      <v-list density="compact" nav>
+        <template v-for="item in navigation" :key="item.title">
+          <v-list-item :href="item.href" :prepend-icon="item.icon" :title="item.title" exact/>
+        </template>
+      </v-list>
+
+      <v-divider></v-divider>
+
+    </v-navigation-drawer>
+
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+
+  </v-app>
 </template>
 
 <script>
-import PersonsLister from './components/PersonsLister.vue'
-
 export default {
   name: 'App',
-  components: {
-    PersonsLister
+  data() {
+    return {
+      navigation: [
+          { title: 'Dashboard', icon: 'mdi-view-dashboard', href: '#/' },
+          { title: 'Persons', icon: 'mdi-account-multiple', href: '#/persons' }
+      ]
+    }
   }
 }
 </script>
