@@ -3,6 +3,8 @@ const fs = require('fs')
 const mongoose = require('mongoose')
 const { faker } = require('@faker-js/faker')
 
+const person = require('../person.js')
+
 let config = {}
 try {
     config = JSON.parse(fs.readFileSync('../config.json'))
@@ -14,25 +16,17 @@ try {
 const deleteExisting = true
 const NumOfPersons = 1000
 
-const Person = new mongoose.model('Person', new mongoose.Schema({
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    birthDate: { type: Date, required: true, transform: v => v.toISOString().slice(0, 10) },
-    education: { type: Number, required: false, enum: [ 0, 1, 2 ], default: 0 }
-}, {
-    versionKey: false,
-    additionalProperties: false
-}))
+let Person = null
 
-const generateData = async deleteExisting => {
+const generateData = async (model, deleteExisting) => {
     if(deleteExisting) {
-        console.log('Delete existing people...')
-        let count = (await Person.deleteMany({})).deletedCount
+        console.log('Delete existing %s...', model.collection.name)
+        let count = (await model.deleteMany({})).deletedCount
         console.log(count + ' done')
     }
-    console.log('Generate and save %d persons', NumOfPersons)
+    console.log('Generate and save %d %s', NumOfPersons, model.collection.name)
     for(let i = 0; i < NumOfPersons; i++) {
-        let person = new Person({
+        let person = new model({
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
             birthDate: faker.date.birthdate(),
@@ -46,8 +40,9 @@ const generateData = async deleteExisting => {
 }
 
 mongoose.connect(config.dbUrl)
-.then(() => {
+.then(connection => {
     console.log('Database connected')
-    generateData(deleteExisting)
+    let model = person.init(connection)
+    generateData(model, deleteExisting)
 })
 .catch(err => console.error(err.message))
