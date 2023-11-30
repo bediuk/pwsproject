@@ -3,7 +3,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     proxy: {
-      '^/(person|project)$': {
+      '^/(auth|person|project)$': {
         target: 'http://localhost:8000',
         ws: true,
         changeOrigin: true

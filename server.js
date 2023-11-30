@@ -7,8 +7,12 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
+const expressSession = require('express-session')
+const passport = require('passport')
+const passportJson = require('passport-json')
 
 // importing own modules
+const auth = require('./auth')
 const person = require('./person')
 const project = require('./project')
 
@@ -30,7 +34,20 @@ app.use((err, req, res, next) => {
     res.status(400).json({ error: err.message })
 })
 
+// authorization middleware
+app.use(expressSession({ secret: config.dbUrl, resave: false , saveUninitialized: true }))
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new passportJson.Strategy(auth.checkCredentials))
+passport.serializeUser(auth.serialize)
+passport.deserializeUser(auth.deserialize)
+
 app.use(express.static(config.frontend))
+
+// authentication endpoints
+app.get('/auth', auth.whoami)
+app.post('/auth', passport.authenticate('json', { failWithError: true }), auth.login, auth.errorHandler)
+app.delete('/auth', auth.logout)
 
 app.get('/person', person.get)
 app.post('/person', person.post)
