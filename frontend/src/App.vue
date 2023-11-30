@@ -27,7 +27,8 @@ export default {
     return {
       navigation: [
           { title: 'Dashboard', icon: 'mdi-view-dashboard', href: '#/' },
-          { title: 'Persons', icon: 'mdi-account-multiple', href: '#/persons' }
+          { title: 'Persons', icon: 'mdi-account-multiple', href: '#/persons' },
+          { title: 'Projects', icon: 'mdi-sitemap-outline', href: '#/projects' }
       ]
     }
   }

@@ -10,6 +10,7 @@ const mongoose = require('mongoose')
 
 // importing own modules
 const person = require('./person')
+const project = require('./project')
 
 let config = {}
 try {
@@ -36,11 +37,17 @@ app.post('/person', person.post)
 app.put('/person', person.put)
 app.delete('/person', person.delete)
 
+app.get('/project', project.get)
+app.post('/project', project.post)
+app.put('/project', project.put)
+app.delete('/project', project.delete)
+
 mongoose.connect(config.dbUrl)
 .then(connection => {
     console.log('Database connected')
     // initialize models over the connection
     person.init(connection)
+    project.init(connection)
 
     app.listen(config.port, () => {
         console.log('Backend listening on port', config.port)
