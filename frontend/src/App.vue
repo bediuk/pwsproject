@@ -11,15 +11,18 @@
 
       <v-divider></v-divider>
 
-      <div>{{ user.username || 'not-logged-in' }}</div>
-      <div v-if="!user.username">
-        <v-text-field variant="solo" label="Username" v-model="creds.username"></v-text-field>
-        <v-text-field variant="solo" type="password" label="Password" v-model="creds.password"></v-text-field>
-        <v-btn @click="login">Login</v-btn>
-      </div>
-      <div v-if="user.username">
-        <v-btn @click="logout">Logout</v-btn>
-      </div>
+      <v-list v-if="user.username">
+        <v-list-item
+          :prepend-avatar="require('./assets/user.png')"
+          :title="user.username"
+        >
+        </v-list-item>
+      </v-list>
+
+      <v-list density="compact" nav>
+        <v-list-item key="Login" @click="loginDialog = true" prepend-icon="mdi-login" title="Login" exact v-if="!user.username"/>
+        <v-list-item key="Logout" @click="logoutConfirmation = true" prepend-icon="mdi-logout" title="Logout" exact v-if="user.username"/>
+      </v-list>
 
     </v-navigation-drawer>
 
@@ -27,12 +30,24 @@
       <router-view></router-view>
     </v-main>
 
+    <v-dialog v-model="loginDialog" width="25em">
+      <Login @cancel="loginDialog = false" @loginFailed="loginDialog = false" @loginSuccess="login"/>
+    </v-dialog>
+
+    <v-dialog v-model="logoutConfirmation" width="auto">
+      <ConfirmationDialog :question="'Are you sure to logout?'" @ok="logout" @cancel="logoutConfirmation = false"/>
+    </v-dialog>
+
   </v-app>
 </template>
 
 <script>
+import Login from './components/Login.vue'
+import ConfirmationDialog from './components/ConfirmationDialog.vue'
+
 export default {
   name: 'App',
+  components: { Login, ConfirmationDialog },
   data() {
     return {
       navigation: [
@@ -41,34 +56,30 @@ export default {
           { title: 'Projects', icon: 'mdi-sitemap-outline', href: '#/projects' }
       ],
       user: {},
-      creds: {}
+      loginDialog: false,
+      logoutConfirmation: false
     }
   },
   methods: {
+    setUser(data) {
+      Object.keys(this.user).forEach(key => delete this.user[key])
+      Object.assign(this.user, data)
+    },
     logout() {
+      this.logoutConfirmation = false
       fetch('/auth', { method: 'DELETE' })
       .then(res => res.json())
-      .then(data => {
-        this.user = data
-      })
+      .then(data => this.setUser(data))
     },
-    login() {
-      fetch('/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.creds) })
-      .then(res => res.json())
-      .then(data => {
-        this.user = data
-      })
+    login(data) {
+      this.loginDialog = false
+      this.setUser(data)
     }
   },
   mounted() {
     fetch('/auth', { method: 'GET' })
     .then(res => res.json())
-    .then(data => {
-      this.user = data
-    })
+    .then(data => this.setUser(data))
   }
 }
 </script>
