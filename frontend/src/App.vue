@@ -27,7 +27,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <router-view></router-view>
+      <router-view :user="user"></router-view>
     </v-main>
 
     <v-dialog v-model="loginDialog" width="25em">

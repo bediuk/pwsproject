@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="checkIfInRole(user, [ 1 ])">
     <v-card variant="text">
       <v-card-title>Persons</v-card-title>
       <v-card-subtitle>
@@ -69,11 +69,14 @@
 </template>
 
 <script>
+import common from '../mixins/common'
 import PersonEditor from './PersonEditor.vue'
 
 export default {
   name: 'PersonsLister',
   components: { PersonEditor },
+  props: [ 'user' ],
+  mixins: [ common ],
   methods: {
     retrieve() {
       this.id = null
