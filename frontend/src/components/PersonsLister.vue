@@ -1,5 +1,5 @@
 <template>
-  <div v-if="checkIfInRole(user, [ 1 ])">
+  <div v-if="checkIfInRole(user, [ 0, 1 ])">
     <v-card variant="text">
       <v-card-title>Persons</v-card-title>
       <v-card-subtitle>
@@ -43,7 +43,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(person, index) in persons" :key="index" @click="click(person)">
+            <tr v-for="(person, index) in persons" :key="index" @click="checkIfInRole(user, [ 1 ]) && click(person)">
               <td>{{ person.firstName }}</td>
               <td>{{ person.lastName }}</td>
               <td class="text-right">{{ new Date(person.birthDate).toLocaleDateString() }}</td>
@@ -59,7 +59,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn variant="elevated" color="success" @click="add">Add</v-btn>
+        <v-btn variant="elevated" color="success" @click="add" v-if="checkIfInRole(user, [ 1 ])">Add</v-btn>
       </v-card-actions>
     </v-card>
     <v-dialog v-model="editor" width="50%">
@@ -113,7 +113,7 @@ export default {
       search: '',
       education: [ 0, 1, 2 ],
       skip: 0,
-      limit: 5
+      limit: 10
     }
   },
   mounted() {

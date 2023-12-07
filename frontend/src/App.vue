@@ -5,7 +5,7 @@
       
       <v-list density="compact" nav>
         <template v-for="item in navigation" :key="item.title">
-          <v-list-item :href="item.href" :prepend-icon="item.icon" :title="item.title" exact/>
+          <v-list-item :href="item.href" :prepend-icon="item.icon" :title="item.title" exact v-show="checkIfInRole(user, item.roles)"/>
         </template>
       </v-list>
 
@@ -42,17 +42,19 @@
 </template>
 
 <script>
+import common from './mixins/common'
 import Login from './components/Login.vue'
 import ConfirmationDialog from './components/ConfirmationDialog.vue'
 
 export default {
   name: 'App',
   components: { Login, ConfirmationDialog },
+  mixins: [ common ],
   data() {
     return {
       navigation: [
           { title: 'Dashboard', icon: 'mdi-view-dashboard', href: '#/' },
-          { title: 'Persons', icon: 'mdi-account-multiple', href: '#/persons' },
+          { title: 'Persons', icon: 'mdi-account-multiple', href: '#/persons', roles: [ 0, 1 ] },
           { title: 'Projects', icon: 'mdi-sitemap-outline', href: '#/projects' }
       ],
       user: {},
@@ -64,6 +66,7 @@ export default {
     setUser(data) {
       Object.keys(this.user).forEach(key => delete this.user[key])
       Object.assign(this.user, data)
+      this.$router.push('/')
     },
     logout() {
       this.logoutConfirmation = false

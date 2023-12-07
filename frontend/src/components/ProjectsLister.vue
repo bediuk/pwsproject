@@ -33,7 +33,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(project, index) in projects" :key="index" @click="click(project)">
+            <tr v-for="(project, index) in projects" :key="index" @click="checkIfInRole(user, [ 1 ]) && click(project)">
               <td>{{ project.name }}</td>
               <td><v-chip :color="project.color">{{ project.shortcut }}</v-chip></td>
               <td class="text-right">{{ new Date(project.startDate).toLocaleDateString() }}</td>
@@ -43,7 +43,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn variant="elevated" color="success" @click="add">Add</v-btn>
+        <v-btn variant="elevated" color="success" @click="add" v-if="checkIfInRole(user, [ 1 ])">Add</v-btn>
       </v-card-actions>
     </v-card>
     <v-dialog v-model="editor" width="50%">
@@ -53,11 +53,14 @@
 </template>
 
 <script>
+import common from '../mixins/common'
 import ProjectEditor from './ProjectEditor.vue'
 
 export default {
   name: 'ProjectsLister',
   components: { ProjectEditor },
+  mixins: [ common ],
+  props: [ 'user' ],
   methods: {
     retrieve() {
       this.id = null
@@ -93,7 +96,7 @@ export default {
       id: null,
       search: '',
       skip: 0,
-      limit: 5
+      limit: 10
     }
   },
   mounted() {

@@ -5,9 +5,11 @@
       <v-card-text>
         <v-form v-model="isProjectValid">
           <v-text-field variant="solo" label="Name" v-model="project.name" :rules="[ rules.required ]"></v-text-field>
-          <v-text-field variant="solo" label="Shortcut" v-model="project.shortcut" :rules="[ rules.required ]"></v-text-field>
-          <v-color-picker  show-swatches v-model="project.color" hide-canvas hide-inputs></v-color-picker>
-          <v-text-field variant="solo" type="date" label="Start date" v-model="project.startDate" :rules="[ rules.validStartDate ]"></v-text-field>
+          <v-color-picker width="100%" show-swatches v-model="project.color" hide-canvas hide-inputs></v-color-picker>
+          <div class="flex-container">
+            <v-text-field variant="solo" label="Shortcut" v-model="project.shortcut" :rules="[ rules.required ]"></v-text-field>
+            <v-text-field variant="solo" type="date" label="Start date" v-model="project.startDate" :rules="[ rules.validStartDate ]"></v-text-field>
+          </div>
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -113,3 +115,11 @@ export default {
   } 
 }
 </script>
+
+<style scoped>
+.flex-container {
+  display: flex;
+}
+.flex-container > div {
+  padding: 20px;
+}</style>
