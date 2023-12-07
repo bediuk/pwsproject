@@ -14,7 +14,7 @@
           </v-radio-group>
           <v-select
             v-model="person.projects" label="Projects"
-            :items="projects.map(project => ({ value: project._id, title: project.name }))"
+            :items="projects.map(project => ({ value: project._id, title: project.shortcut, props: { subtitle: project.name + ' ' + project.startDate.slice(0, 10) } }))"
             chips multiple>
           </v-select>
         </v-form>

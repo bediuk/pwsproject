@@ -2,7 +2,9 @@ const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
     name: { type: String, required: true },
-    startDate: { type: Date, required: true, transform: v => v.toISOString().slice(0, 10) }
+    startDate: { type: Date, required: true, transform: v => v.toISOString().slice(0, 10) },
+    shortcut: { type: String, required: true },
+    color: { type: String, required: false, default: '#000000' },
 }, {
     versionKey: false,
     additionalProperties: false

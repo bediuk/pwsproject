@@ -24,6 +24,9 @@
               <th class="text-left">
                 Name
               </th>
+              <th class="text-left">
+                Shortcut
+              </th>
               <th class="text-right">
                 Start date
               </th>
@@ -32,6 +35,7 @@
           <tbody>
             <tr v-for="(project, index) in projects" :key="index" @click="click(project)">
               <td>{{ project.name }}</td>
+              <td><v-chip :color="project.color">{{ project.shortcut }}</v-chip></td>
               <td class="text-right">{{ new Date(project.startDate).toLocaleDateString() }}</td>
             </tr>
           </tbody>

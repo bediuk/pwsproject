@@ -49,9 +49,9 @@
               <td class="text-right">{{ new Date(person.birthDate).toLocaleDateString() }}</td>
               <td><v-chip>{{ [ 'primary', 'secondary', 'high' ][person.education] }}</v-chip></td>
               <td>
-                <div v-for="(project, pindex) in person.projects" :key="pindex">
-                  {{ project.name }}
-                </div>
+                <v-chip :color="project.color" v-for="(project, pindex) in person.projects" :key="pindex">
+                  {{ project.shortcut }}
+                </v-chip>
               </td>
             </tr>
           </tbody>
