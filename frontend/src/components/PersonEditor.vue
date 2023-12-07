@@ -7,11 +7,16 @@
           <v-text-field variant="solo" label="First name" v-model="person.firstName" :rules="[ rules.required ]"></v-text-field>
           <v-text-field variant="solo" label="Last name" v-model="person.lastName" :rules="[ rules.required ]"></v-text-field>
           <v-text-field variant="solo" type="date" label="Birth date" v-model="person.birthDate" :rules="[ rules.validBirthDate ]"></v-text-field>
-          <v-radio-group v-model="person.education" inline>
+          <v-radio-group label="Education" v-model="person.education" inline>
             <v-radio :value="0" label="primary"></v-radio>
             <v-radio :value="1" label="secondary"></v-radio>
             <v-radio :value="2" label="high"></v-radio>
           </v-radio-group>
+          <v-select
+            v-model="person.projects" label="Projects"
+            :items="projects.map(project => ({ value: project._id, title: project.name }))"
+            chips multiple>
+          </v-select>
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -94,10 +99,14 @@ export default {
       },
       person: {},
       dialog: false,
-      confirmation: false     
+      confirmation: false,
+      projects: []     
     }
   },
   mounted() {
+    fetch('/project?limit=1000', { method: 'GET'})
+    .then(res => res.json())
+    .then(data => this.projects = data)
     if(this.id) {
       fetch('/person?_id=' + this.id, { method: 'GET' })
       .then((res) => {
