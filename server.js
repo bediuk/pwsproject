@@ -49,15 +49,15 @@ app.get('/auth', auth.whoami)
 app.post('/auth', passport.authenticate('json', { failWithError: true }), auth.login, auth.errorHandler)
 app.delete('/auth', auth.logout)
 
-app.get('/person', person.get)
-app.post('/person', person.post)
-app.put('/person', person.put)
-app.delete('/person', person.delete)
+app.get('/person', auth.checkIfInRole([ 0, 1 ]), person.get)
+app.post('/person', auth.checkIfInRole([ 1 ]), person.post)
+app.put('/person', auth.checkIfInRole([ 1 ]), person.put)
+app.delete('/person', auth.checkIfInRole([ 1 ]), person.delete)
 
 app.get('/project', project.get)
-app.post('/project', project.post)
-app.put('/project', project.put)
-app.delete('/project', project.delete)
+app.post('/project', auth.checkIfInRole([ 1 ]), project.post)
+app.put('/project', auth.checkIfInRole([ 1 ]), project.put)
+app.delete('/project', auth.checkIfInRole([ 1 ]), project.delete)
 
 mongoose.connect(config.dbUrl)
 .then(connection => {
