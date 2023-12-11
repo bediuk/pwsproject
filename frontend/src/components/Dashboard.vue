@@ -11,7 +11,8 @@
   
 <script>
     export default {
-      name: 'DashboardView'
+      name: 'DashboardView',
+      props: [ 'user' ]
     }
 </script>
   

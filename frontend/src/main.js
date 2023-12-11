@@ -22,13 +22,15 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Dashboard from './components/Dashboard.vue'
 import PersonsLister from './components/PersonsLister.vue'
 import ProjectsLister from './components/ProjectsLister.vue'
+import Chat from './components/Chat.vue'
 
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         { path: '/', component: Dashboard },
         { path: '/persons', component: PersonsLister },
-        { path: '/projects', component: ProjectsLister }
+        { path: '/projects', component: ProjectsLister },
+        { path: '/chat', component: Chat }
     ]
 })
 

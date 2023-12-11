@@ -10,9 +10,11 @@ const mongoose = require('mongoose')
 const expressSession = require('express-session')
 const passport = require('passport')
 const passportJson = require('passport-json')
+const expressWs = require('express-ws')
 
 // importing own modules
 const auth = require('./auth')
+const websocket = require('./websocket')
 const person = require('./person')
 const project = require('./project')
 
@@ -58,6 +60,10 @@ app.get('/project', project.get)
 app.post('/project', auth.checkIfInRole([ 1 ]), project.post)
 app.put('/project', auth.checkIfInRole([ 1 ]), project.put)
 app.delete('/project', auth.checkIfInRole([ 1 ]), project.delete)
+
+// websockets handling
+const wsInstance = expressWs(app)
+app.ws('/websocket', websocket(wsInstance))
 
 mongoose.connect(config.dbUrl)
 .then(connection => {
