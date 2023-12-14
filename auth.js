@@ -92,11 +92,10 @@ const auth = module.exports = {
     whoami: (req, res) => {
         req.session.roles = req.user ? req.user.roles : []
         req.session.save()
-        let data = {}
+        let data = { sessionid: req.session.id }
         if(req.user) {
             data.username = req.user.username
             data.roles = req.user.roles
-            data.sessionid = req.session.id
         }
         res.json(data)
     },

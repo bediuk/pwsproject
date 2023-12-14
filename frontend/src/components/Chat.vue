@@ -41,6 +41,9 @@ export default {
         this.connection = new WebSocket('ws://' + window.location.host + '/websocket')
         this.connection.onopen = () => {
             console.log('Websocket connection established')
+            setTimeout(() => 
+                this.connection.send(JSON.stringify({ event: 'INIT', session: this.user.sessionid || null }))
+            , 100)    
         }
         this.connection.onmessage = (event) => {
             let data = {}
