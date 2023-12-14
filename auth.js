@@ -70,11 +70,11 @@ const auth = module.exports = {
     },
 
     serialize: (user, nextTick) => {
-        nextTick(null, user._id)
+        nextTick(null, user.username)
     },
 
-    deserialize: (_id, nextTick) => {
-        User.findOne({ _id })
+    deserialize: (username, nextTick) => {
+        User.findOne({ username })
         .then(user => {
             if(user) {
                 return nextTick(null, user)

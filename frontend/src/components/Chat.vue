@@ -4,7 +4,8 @@
         <v-card-text>
             <v-list>
                 <v-list-item v-for="(data, index) in history" :key="index"
-                :subtitle="data.timestamp.toLocaleTimeString()">
+                :subtitle="(data.sender || 'not-logged-in') + ' ' + data.timestamp.toLocaleTimeString()"
+                :class="data.sender == user.username ? 'my-message' : 'foreign-message'">
                     {{ data.message }}
                 </v-list-item>
             </v-list>
@@ -62,4 +63,6 @@ export default {
 </script>
   
 <style scoped>
+.foreign-message { text-align: left; }
+.my-message { text-align: right; }
 </style>
