@@ -28,7 +28,8 @@
     name: 'LoginForm',
     emits: [ 'loginSuccess', 'loginFailed', 'cancel' ],
     methods: {
-      login() {
+      login(event) {
+        event.preventDefault()
         fetch('/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

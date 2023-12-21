@@ -66,6 +66,7 @@ export default {
   },
   methods: {
     setUser(data) {
+      this.loginDialog = false
       Object.keys(this.user).forEach(key => delete this.user[key])
       Object.assign(this.user, data)
       this.$router.push('/')
@@ -83,7 +84,7 @@ export default {
       this.loginDialog = true
     },
     login(data) {
-      this.showNavigation = false
+      this.loginDialog = false
       this.setUser(data)
     }
   },
