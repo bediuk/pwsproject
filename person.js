@@ -15,8 +15,8 @@ let model = null
 
 module.exports = {
 
-    schema,
-    model,
+    getSchema: () => schema,
+    getModel: () => model,
 
     init: connection => {
         model = connection.model('Person', schema)

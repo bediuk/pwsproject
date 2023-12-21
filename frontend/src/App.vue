@@ -1,7 +1,7 @@
 <template>
   <v-app>
     
-    <v-navigation-drawer expand-on-hover rail permanent>
+    <v-navigation-drawer expand-on-hover rail permanent v-model="showNavigation">
       
       <v-list density="compact" nav>
         <template v-for="item in navigation" :key="item.title">
@@ -20,7 +20,7 @@
       </v-list>
 
       <v-list density="compact" nav>
-        <v-list-item key="Login" @click="loginDialog = true" prepend-icon="mdi-login" title="Login" exact v-if="!user.username"/>
+        <v-list-item key="Login" @click="prepareToLogin" prepend-icon="mdi-login" title="Login" exact v-if="!user.username"/>
         <v-list-item key="Logout" @click="logoutConfirmation = true" prepend-icon="mdi-logout" title="Logout" exact v-if="user.username"/>
       </v-list>
 
@@ -58,6 +58,7 @@ export default {
           { title: 'Projects', icon: 'mdi-sitemap-outline', href: '#/projects' },
           { title: 'Chat', icon: 'mdi-chat-processing-outline', href: '#/chat' }
       ],
+      showNavigation: false,
       user: {},
       loginDialog: false,
       logoutConfirmation: false
@@ -68,15 +69,21 @@ export default {
       Object.keys(this.user).forEach(key => delete this.user[key])
       Object.assign(this.user, data)
       this.$router.push('/')
+      this.showNavigation = true
     },
     logout() {
       this.logoutConfirmation = false
+      this.showNavigation = false
       fetch('/auth', { method: 'DELETE' })
       .then(res => res.json())
       .then(data => this.setUser(data))
     },
+    prepareToLogin() {
+      this.showNavigation = false
+      this.loginDialog = true
+    },
     login(data) {
-      this.loginDialog = false
+      this.showNavigation = false
       this.setUser(data)
     }
   },

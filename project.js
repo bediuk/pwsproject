@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const person = require('./person')
 
 const schema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -14,8 +15,8 @@ let model = null
 
 module.exports = {
 
-    schema,
-    model,
+    getSchema: () => schema,
+    getModel: () => model,
 
     init: connection => {
         model = connection.model('Project', schema)
@@ -85,6 +86,9 @@ module.exports = {
         const _id = req.query._id
         model.findOneAndDelete({ _id }).then((deleted) => {
             if(deleted) {
+                person.getModel().updateMany({}, { $pull: { projects: _id } })
+                .then(() => res.json(deleted))
+                .catch((err) => console.error(err.message))
                 res.json(deleted)
             } else {
                 res.status(404).json({ error: 'No such object' })
