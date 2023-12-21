@@ -14,6 +14,7 @@
             </v-container>
             </v-card-text>
             <v-card-actions>
+                <v-spacer></v-spacer>
                 <v-btn type="submit" size="small" color="success" @click="login" variant="elevated" :disabled="!valid">Login</v-btn>
                 <v-btn size="small" @click="$emit('cancel')" variant="elevated">Cancel</v-btn>
             </v-card-actions>

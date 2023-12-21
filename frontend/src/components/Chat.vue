@@ -1,5 +1,4 @@
 <template>
-<v-form v-model="valid">
     <v-card variant="text">
         <v-card-title>Chat</v-card-title>
         <v-card-text>
@@ -18,16 +17,17 @@
                 <v-text-field variant="solo" label="Recipient" v-model="recipient"></v-text-field>
             </v-col>
             <v-col cols="8">
+            <v-form ref="messageinput" v-model="valid">
             <v-text-field variant="solo" label="Message" v-model="message" :rules="[ rules.required ]">
                 <template #append-inner>
                     <v-btn type="submit" variant="elevated" color="success" @click="send" :disabled="!valid">Send</v-btn>
                 </template>
             </v-text-field>
+            </v-form>
             </v-col>
         </v-row>
         </v-card-actions>
     </v-card>
-</v-form>
 </template>
   
 <script>
@@ -53,7 +53,7 @@ export default {
                 event.recipient = this.recipient
             }
             this.connection.send(JSON.stringify(event))
-            this.message = ''
+            this.$refs.messageinput.reset()
         }
     },
     mounted() {
