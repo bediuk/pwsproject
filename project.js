@@ -88,8 +88,7 @@ module.exports = {
             if(deleted) {
                 person.getModel().updateMany({}, { $pull: { projects: _id } })
                 .then(() => res.json(deleted))
-                .catch((err) => console.error(err.message))
-                res.json(deleted)
+                .catch(err => res.status(400).json({ error: err.message }))
             } else {
                 res.status(404).json({ error: 'No such object' })
             }
