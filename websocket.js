@@ -27,8 +27,10 @@ module.exports = wsInstance => (ws, req) => {
                     let target = sessions[client.session]
                     if(!target) return
                     let recipient = { username: target.passport ? target.passport.user : null, roles: target.roles || [] }
-                    console.log('WS send to', recipient)
-                    client.send(JSON.stringify(data))
+                    if(!data.recipient || data.sender == recipient.username || data.recipient == recipient.username) {
+                        console.log('WS send to', recipient)
+                        client.send(JSON.stringify(data))
+                    }
                 }
             })
         })

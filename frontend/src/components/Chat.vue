@@ -1,23 +1,33 @@
 <template>
+<v-form v-model="valid">
     <v-card variant="text">
         <v-card-title>Chat</v-card-title>
         <v-card-text>
             <v-list>
                 <v-list-item v-for="(data, index) in history" :key="index"
                 :subtitle="(data.sender || 'not-logged-in') + ' ' + data.timestamp.toLocaleTimeString()"
-                :class="data.sender == user.username ? 'my-message' : 'foreign-message'">
+                :class="(data.sender == user.username ? 'my-message' : 'foreign-message') + ' ' +
+                        (data.recipient ? 'unicast' : 'broadcast')">
                     {{ data.message }}
                 </v-list-item>
             </v-list>
         </v-card-text>
         <v-card-actions>
-            <v-text-field variant="solo" label="Message" v-model="message">
+        <v-row>
+            <v-col cols="4">
+                <v-text-field variant="solo" label="Recipient" v-model="recipient"></v-text-field>
+            </v-col>
+            <v-col cols="8">
+            <v-text-field variant="solo" label="Message" v-model="message" :rules="[ rules.required ]">
                 <template #append-inner>
-                    <v-btn variant="elevated" color="success" @click="send">Send</v-btn>
+                    <v-btn type="submit" variant="elevated" color="success" @click="send" :disabled="!valid">Send</v-btn>
                 </template>
             </v-text-field>
+            </v-col>
+        </v-row>
         </v-card-actions>
     </v-card>
+</v-form>
 </template>
   
 <script>
@@ -28,12 +38,21 @@ export default {
         return {
             connection: null,
             message: '',
-            history: []
+            recipient: '',
+            history: [],
+            valid: false,
+            rules: {
+                required: value => !!value || 'empty message cannot be sent'
+            }
         }
     },
     methods: {
         send() {
-            this.connection.send(JSON.stringify({ event: 'CHAT', message: this.message }))
+            let event = { event: 'CHAT', message: this.message }
+            if(this.recipient) {
+                event.recipient = this.recipient
+            }
+            this.connection.send(JSON.stringify(event))
             this.message = ''
         }
     },
@@ -43,7 +62,7 @@ export default {
             console.log('Websocket connection established')
             setTimeout(() => 
                 this.connection.send(JSON.stringify({ event: 'INIT', session: this.user.sessionid || null }))
-            , 100)    
+            , 500)    
         }
         this.connection.onmessage = (event) => {
             let data = {}
@@ -68,4 +87,6 @@ export default {
 <style scoped>
 .foreign-message { text-align: left; }
 .my-message { text-align: right; }
+.unicast { color: black; }
+.broadcast { color: green; }
 </style>
