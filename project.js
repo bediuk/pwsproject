@@ -42,7 +42,15 @@ module.exports = {
                 { $sort: { name: 1 }},
                 { $match: 
                     { name: { $regex: new RegExp(req.query.search, 'i') } }
-                }
+                },
+                { $lookup: {
+                    from: 'people',
+                    localField: '_id',
+                    foreignField: 'projects',
+                    as: 'members'
+                }},
+                { $set: { members: { $size: '$members' }}}
+
             ]
             aggregation.push({ $skip: parseInt(req.query.skip) || 0 })
             aggregation.push({ $limit: parseInt(req.query.limit) || 10 })
