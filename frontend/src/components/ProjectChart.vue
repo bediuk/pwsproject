@@ -16,7 +16,8 @@ export default {
             ready: false,
             chartOptions: {
                 chart: { type: 'donut' },
-                labels: []
+                labels: [],
+                fill: { type: 'gradient' },
             },
             series: []
         }
@@ -29,6 +30,8 @@ export default {
             .then((data) => {
               this.series = data.map(project => project.members)
               this.chartOptions.labels = data.map(project => project.name)
+              // this.series.unshift(900)
+              // this.chartOptions.labels.unshift('not assigned')
               this.ready = true
             })
             .catch(err => console.error(err.message))
