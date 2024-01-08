@@ -1,8 +1,14 @@
 <template>
-    <ApexChart v-if="ready"
-        :options="chartOptions"
-        :series="series"
-    ></ApexChart>
+  <v-row>
+    <v-col cols="6">
+        <ApexChart v-if="ready"
+            :options="chartOptions"
+            :series="series"
+        ></ApexChart>
+    </v-col>
+    <v-col cols="6">
+    </v-col>
+  </v-row>    
 </template>
   
 <script>
@@ -30,8 +36,6 @@ export default {
             .then((data) => {
               this.series = data.map(project => project.members)
               this.chartOptions.labels = data.map(project => project.name)
-              // this.series.unshift(900)
-              // this.chartOptions.labels.unshift('not assigned')
               this.ready = true
             })
             .catch(err => console.error(err.message))
