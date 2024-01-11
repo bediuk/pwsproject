@@ -51,6 +51,15 @@ module.exports = {
                     aggregation.push({ $match: { education: { $in: education } } })    
                 }
             } catch(err) {}
+            try {
+                let minProjectsCount = JSON.parse(req.query.minProjects)
+                if(minProjectsCount > 0) {
+                    aggregation.push({ $match: { projects: { $exists: true }}})
+                    aggregation.push({ $set: { projectsCount: { $size: '$projects' }}})
+                    aggregation.push({ $match: { projectsCount: { $gte: minProjectsCount }}})
+                    aggregation.push({ $sort: { projectsCount: -1 }})
+                }
+            } catch(ex) {}
             aggregation.push({ $skip: parseInt(req.query.skip) || 0 })
             aggregation.push({ $limit: parseInt(req.query.limit) || 10 })
             aggregation.push({ $lookup: {
