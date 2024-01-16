@@ -6,6 +6,8 @@
           :icon-url="require('leaflet/dist/images/marker-icon.png')"
           :icon-retina-url="require('leaflet/dist/images/marker-icon-2x.png')"
           :icon-shadow-url="require('leaflet/dist/images/marker-shadow.png')"
+          :icon-size="[28,46]"
+          :icon-anchor="[17,46]"
           :opacity="index == selected ? 1 : 0.5"
           @mousedown="onMarkerClick(marker, index)"
         ></VMapIconMarker>
