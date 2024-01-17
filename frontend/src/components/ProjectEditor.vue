@@ -5,7 +5,7 @@
       <v-card-text>
         <v-form v-model="isProjectValid">
           <v-text-field variant="solo" label="Name" v-model="project.name" :rules="[ rules.required ]"></v-text-field>
-          <v-color-picker width="100%" show-swatches v-model="project.color" hide-canvas hide-inputs></v-color-picker>
+          <v-color-picker mode="rgb" width="100%" show-swatches hide-canvas hide-sliders hide-inputs v-model="project.color"></v-color-picker>
           <div class="flex-container">
             <v-text-field variant="solo" label="Shortcut" v-model="project.shortcut" :rules="[ rules.required ]"></v-text-field>
             <v-text-field variant="solo" type="date" label="Start date" v-model="project.startDate" :rules="[ rules.validStartDate ]"></v-text-field>
@@ -107,10 +107,8 @@ export default {
       })
       .catch((err) => console.error(err.message))
     } else {
-      this.project = {
-        birthDate: new Date().toISOString().slice(0, 10),
-        education: 0
-      }
+      this.project.startDate = new Date().toISOString().slice(0, 10)
+      this.project.color = '#000000'
     }
   } 
 }
