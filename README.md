@@ -33,3 +33,15 @@ Add new data schema - `Task`, with rest interface and corresponding frontend. Ge
 
 Please note that implementation of all the features requires also changes in endpoints `GET /person` and maybe others.
 
+### Task for good grade (4)
+
+Extend the previous requirements with:
+
+1. In the tasks view, add a Gantt's diagram (a timeline chart) for the project: on the x-axis dates, on the y-axis tasks. Tasks are represented by rectangles (segments) from date to date. Tasks without an end date are shown in a different color, and their end date is displayed as a current date. The chart is to update automatically whenever the project tasks change.
+1. In the person view, add a button at each person, activating a modal window with a Gantt's diagram of the person's tasks.
+
+### Task for very good grade (5)
+
+The task for a good grade and:
+
+The displayed task data and diagrams are to refresh when another user of the appropriate role makes changes within the tasks.
