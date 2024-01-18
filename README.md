@@ -31,7 +31,8 @@ Add new data schema - `Task`, with rest interface and corresponding frontend. Ge
 1. `TaskEditor` does not allow to set a project that the task belongs to. The field is set implicitly by selection of the project in the parent view (`TasksLister`).
 1. Selection of the task workers applies only to project members.
 
-Please note that implementation of all the features requires also changes in endpoints `GET /person` and maybe others.
+Please note that implementation of all the features requires also changes in endpoints `GET /project` and maybe others.
+Hint: view my backend solutions from the 'tasks' branch https://gitlab.com/mariusz.jarocki/pws2023/-/tree/tasks?ref_type=heads
 
 ### Task for good grade (4)
 
