@@ -1,38 +1,32 @@
 <template>
-  <div>
-    <VMap ref="vmap" style="height: 500px;" :center="center" :zoom="zoom" @view-changed="onViewChanged" @click="onMapClick">
+  <div v-if="markers.length > 0">
+    <v-select variant="solo" label="Project"
+          v-model="selected"
+          :items="markers.map((item, index) => ({ value: index, title: item.title }))"
+          @update:model-value="selectProject"
+    />
+    <VMap ref="vmap" style="height: 700px;" :center="center" :zoom="zoom" @view-changed="onViewChanged">
       <template v-for="(marker, index) in markers" :key="index">
         <VMapIconMarker ref="vmarker" v-model:latlng="markers[index]"
           :icon-url="require('leaflet/dist/images/marker-icon.png')"
           :icon-retina-url="require('leaflet/dist/images/marker-icon-2x.png')"
           :icon-shadow-url="require('leaflet/dist/images/marker-shadow.png')"
-          :icon-size="[28,46]"
-          :icon-anchor="[17,46]"
+          :icon-size="[28, 46]"
+          :icon-anchor="[17, 46]"
           :opacity="index == selected ? 1 : 0.5"
           @mousedown="onMarkerClick(marker, index)"
         ></VMapIconMarker>
       </template>
-      <VMapOsmTileLayer/>
+      <VMapGoogleTileLayer/>
       <VMapZoomControl/>
     </VMap>
 
-    <hr/>
+    <div v-if="markers.length == 0">
+      No projects
+    </div>
 
-    <v-row>
-      <v-col>
-        <v-text-field variant="solo" label="Center latitude" type="number" v-model="center.lat" @update:modelValue="onCenterChange"></v-text-field>
-      </v-col>
-      <v-col>
-        <v-text-field variant="solo" label="Center longitude" type="number" v-model="center.lng" @update:modelValue="onCenterChange"></v-text-field>
-      </v-col>
-      <v-col>
-        <v-select variant="solo" label="Place"
-          v-model="selected"
-          :items="markers.map((item, index) => ({ value: index, title: item.title }))"
-        >
-        </v-select>
-      </v-col>
-    </v-row>
+    <v-snackbar v-model="dataAccessError" color="error" timeout="3000">{{ dataAccessErrorMsg }}</v-snackbar>
+
   </div>
 </template>
     
@@ -43,39 +37,56 @@ import 'vue-map-ui/dist/normalize.css'
 import 'vue-map-ui/dist/style.css'
 import 'vue-map-ui/dist/theme-all.css'
 
-import { VMap, VMapOsmTileLayer, VMapZoomControl, VMapIconMarker } from 'vue-map-ui'
+import { VMap, VMapGoogleTileLayer, VMapZoomControl, VMapIconMarker } from 'vue-map-ui'
+
+import common from '../mixins/common'
 
 export default {
   name: 'ProjectsMap',
-  components: { VMap, VMapOsmTileLayer, VMapZoomControl, VMapIconMarker },
+  components: { VMap, VMapGoogleTileLayer, VMapZoomControl, VMapIconMarker },
+  mixins: [ common ],
   data() {
     return {
-      center: { lat: 51.773765, lng: 19.485026 },
-      zoom: 15,
-      markers: [ 
-        { lat: 51.778645, lng: 19.495462, title: 'Dormitory' },
-        { lat: 51.772653, lng: 19.474785, title: 'Rectorate' },
-        { lat: 51.776765, lng: 19.487026, title: 'Faculty' }
-      ],
-      selected: 0
+      center: this.defaultCoords(),
+      zoom: 12,
+      markers: [],
+      selected: 0,
+      dataAccessError: false,
+      dataAccessErrorMsg: ''
     }
   },
   methods: {
-    onMapClick(clickPos) {
-      console.log(clickPos.latlng)
-    },
-    onCenterChange() {
-      this.$refs.vmap.map.panTo(this.center)
+    selectProject() {
+      this.center = { lat: this.markers[this.selected].lat, lng: this.markers[this.selected].lng }
+      this.$refs.vmap.map.flyTo(this.center)
     },
     onMarkerClick(marker, index) {
-      console.log(marker)
       this.selected = index
+      this.selectProject()
     },
     onViewChanged(event) {
       this.center = event.center
+    },
+    onDataAccessFailed(data) {
+      this.dataAccessErrorMsg = data
+      this.dataAccessError = true
     }
   },
   mounted() {
+    fetch('/project?limit=1000', { method: 'GET' })
+      .then(res => res.json())
+      .then(data => { 
+        if(data.error) throw new Error(data.error)
+        this.markers = data.map(project => ({
+          title: project.name,
+          lat: project.coords.lat || this.defaultCoords().lat,
+          lng: project.coords.lng || this.defaultCoords().lng
+        }))
+        if(this.markers.length) {
+          this.center = this.markers[0]
+        }
+      })
+      .catch(err => console.log(err.message))
   }
 }
 </script>

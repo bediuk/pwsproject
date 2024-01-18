@@ -1,6 +1,6 @@
 export default {
     methods: {
-        checkIfInRole: (user, roleNums) => {
+        checkIfInRole(user, roleNums) {
             let intersection = []
             if(roleNums == null) {
                 intersection.push(-1)
@@ -12,6 +12,12 @@ export default {
                 })
             }
             return intersection.length > 0
+        },
+        defaultCoords() {
+            return { lat: 51.776792410651765, lng: 19.48687875188774 }
+        },
+        defaultColor() {
+            return '#1F0080'
         }
     }
 }
