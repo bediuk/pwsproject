@@ -11,6 +11,7 @@ const expressSession = require('express-session')
 const passport = require('passport')
 const passportJson = require('passport-json')
 const expressWs = require('express-ws')
+const fileUpload = require('express-fileupload')
 
 // importing own modules
 const auth = require('./auth')
@@ -43,6 +44,21 @@ app.use(passport.session())
 passport.use(new passportJson.Strategy(auth.checkCredentials))
 passport.serializeUser(auth.serialize)
 passport.deserializeUser(auth.deserialize)
+
+// file upload
+app.use(fileUpload())
+app.post('/files', auth.checkIfInRole([ 0, 1 ]), (req, res) => {
+    let { image } = req.files
+    if(!image || !/^image/.test(image.mimetype)) {
+        res.sendStatus(400)
+        return
+    }
+    image.mv('./frontend/dist/uploads/avatar.jpg')
+    res.sendStatus(200)
+})
+app.delete('/files', (req, res) => {
+    res.sendStatus(200)
+})
 
 app.use(express.static(config.frontend))
 

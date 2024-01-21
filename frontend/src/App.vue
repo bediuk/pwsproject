@@ -13,8 +13,9 @@
 
       <v-list v-if="user.username">
         <v-list-item
-          :prepend-avatar="require('./assets/user.png')"
+          :prepend-avatar="'/uploads/avatar.jpg?' + cacheKey"
           :title="user.username"
+          @click="uploadFileDialog = true"
         >
         </v-list-item>
       </v-list>
@@ -38,6 +39,10 @@
       <ConfirmationDialog :question="'Are you sure to logout?'" @ok="logout" @cancel="logoutConfirmation = false"/>
     </v-dialog>
 
+    <v-dialog v-model="uploadFileDialog" width="25em">
+      <UploadFile @close="closeUploadFileDialog"/>
+    </v-dialog>
+
   </v-app>
 </template>
 
@@ -45,10 +50,11 @@
 import common from './mixins/common'
 import Login from './components/Login.vue'
 import ConfirmationDialog from './components/ConfirmationDialog.vue'
+import UploadFile from './components/UploadFile.vue'
 
 export default {
   name: 'App',
-  components: { Login, ConfirmationDialog },
+  components: { Login, ConfirmationDialog, UploadFile },
   mixins: [ common ],
   data() {
     return {
@@ -62,7 +68,9 @@ export default {
       showNavigation: false,
       user: {},
       loginDialog: false,
-      logoutConfirmation: false
+      logoutConfirmation: false,
+      uploadFileDialog: false,
+      cacheKey: Date.now()
     }
   },
   methods: {
@@ -87,6 +95,10 @@ export default {
     login(data) {
       this.loginDialog = false
       this.setUser(data)
+    },
+    closeUploadFileDialog() {
+      this.uploadFileDialog = false
+      this.cacheKey = Date.now()
     }
   },
   mounted() {
