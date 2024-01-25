@@ -45,4 +45,4 @@ Extend the previous requirements with:
 
 The task for a good grade and:
 
-The displayed task data and diagrams are to refresh when another user of the appropriate role makes changes within the tasks.
+The displayed task data and diagrams are automatically refreshed when another user of the appropriate role makes changes within the tasks. Please avoid constantly sending requests and use Websockets to implement the feature.
