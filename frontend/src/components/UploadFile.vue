@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card :prepend-avatar="'/uploads/avatar.jpg?' + cacheKey">
+    <v-card :prepend-avatar="'/uploads/' + user.username + '.jpg?' + cacheKey">
         <v-card-title>
           Upload avatar
         </v-card-title>
@@ -36,6 +36,7 @@
   export default {
     name: 'UploadFile',
     components: { FilePond },
+    props: [ 'user' ],
     data: function () {
         return {
             files: [],

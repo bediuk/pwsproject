@@ -13,7 +13,7 @@
 
       <v-list v-if="user.username">
         <v-list-item
-          :prepend-avatar="'/uploads/avatar.jpg?' + cacheKey"
+          :prepend-avatar="'/uploads/' + user.username + '.jpg?' + cacheKey"
           :title="user.username"
           @click="uploadFileDialog = true"
         >
@@ -40,7 +40,7 @@
     </v-dialog>
 
     <v-dialog v-model="uploadFileDialog" width="25em">
-      <UploadFile @close="closeUploadFileDialog"/>
+      <UploadFile :user="user" @close="closeUploadFileDialog"/>
     </v-dialog>
 
   </v-app>

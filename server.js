@@ -53,7 +53,7 @@ app.post('/files', auth.checkIfInRole([ 0, 1 ]), (req, res) => {
         res.sendStatus(400)
         return
     }
-    image.mv('./frontend/dist/uploads/avatar.jpg')
+    image.mv('./frontend/dist/uploads/' + req.user.username + '.jpg')
     res.sendStatus(200)
 })
 app.delete('/files', (req, res) => {
