@@ -1,5 +1,0 @@
-{
-    "port": 8000,
-    "frontend": "./frontend/dist",
-    "dbUrl": "mongodb+srv://<username>:<password>@<hostname>/<database>?retryWrites=true&w=majority"
-}

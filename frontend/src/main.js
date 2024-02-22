@@ -23,6 +23,7 @@ import Dashboard from './components/Dashboard.vue'
 import PersonsLister from './components/PersonsLister.vue'
 import ProjectsLister from './components/ProjectsLister.vue'
 import ProjectsMap from './components/ProjectsMap.vue'
+import TasksLister from './components/TasksLister.vue'
 import Chat from './components/Chat.vue'
 
 const router = createRouter({
@@ -32,6 +33,7 @@ const router = createRouter({
         { path: '/persons', component: PersonsLister },
         { path: '/projects', component: ProjectsLister },
         { path: '/map', component: ProjectsMap },
+        { path: '/tasks', component: TasksLister },
         { path: '/chat', component: Chat }
     ]
 })

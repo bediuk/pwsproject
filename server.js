@@ -18,6 +18,7 @@ const auth = require('./auth')
 const websocket = require('./websocket')
 const person = require('./person')
 const project = require('./project')
+const task = require('./task')
 
 let config = {}
 try {
@@ -77,6 +78,11 @@ app.post('/project', auth.checkIfInRole([ 1 ]), project.post)
 app.put('/project', auth.checkIfInRole([ 1 ]), project.put)
 app.delete('/project', auth.checkIfInRole([ 1 ]), project.delete)
 
+app.get('/task', task.get)
+app.post('/task', auth.checkIfInRole([ 1 ]), task.post)
+app.put('/task', auth.checkIfInRole([ 1 ]), task.put)
+app.delete('/task', auth.checkIfInRole([ 1 ]), task.delete)
+
 // websockets handling
 const wsInstance = expressWs(app)
 app.ws('/websocket', websocket(wsInstance))
@@ -87,7 +93,7 @@ mongoose.connect(config.dbUrl)
     // initialize models over the connection
     person.init(connection)
     project.init(connection)
-
+    task.init(connection)
     app.listen(config.port, () => {
         console.log('Backend listening on port', config.port)
     })

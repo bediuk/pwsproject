@@ -52,7 +52,6 @@ import 'vue-map-ui/dist/style.css'
 import 'vue-map-ui/dist/theme-all.css'
 
 import { VMap, VMapGoogleTileLayer, VMapZoomControl, VMapIconMarker } from 'vue-map-ui'
-
 import common from '../mixins/common'
 import ConfirmationDialog from './ConfirmationDialog.vue'
 
@@ -67,25 +66,27 @@ export default {
       fetch('/project', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.project) })
-        .then(res => res.json())
-        .then(data => {
-          if(data.error) throw new Error(data.error)
-          this.$emit('dataChanged')
-        })
-        .catch(err => this.$emit('dataAccessFailed', err.message))
+        body: JSON.stringify(this.project)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error) throw new Error(data.error)
+        this.$emit('dataChanged')
+      })
+      .catch(err => this.$emit('dataAccessFailed', err.message))
     },
     modify() {
       fetch('/project?_id=' + this.id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.project) })
-        .then(res => res.json())
-        .then(data => {
-          if(data.error) throw new Error(data.error)
-          this.$emit('dataChanged')
-        })
-        .catch(err => this.$emit('dataAccessFailed', err.message))
+        body: JSON.stringify(this.project)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error) throw new Error(data.error)
+        this.$emit('dataChanged')
+      })
+      .catch(err => this.$emit('dataAccessFailed', err.message))
     },
     remove() {
       this.confirmation = true
@@ -108,7 +109,7 @@ export default {
     },
     centerView() {
       this.center = this.project.coords
-      this.$refs.vmap.map.flyTo(this.center)
+      this.$refs.vmap.map.panTo(this.center)
     }
   },
   data() {
@@ -119,8 +120,13 @@ export default {
         validStartDate: value => !isNaN(new Date(value)) || 'valid date required'
       },
       project: {
+        name: '',
+        startDate: '',
+        shortcut: '',
         color: this.defaultColor(),
-        coords: this.defaultCoords()
+        coords: this.defaultCoords(),
+        status: 0, // add default status value
+        workers: [] // add default workers value
       },
       center: this.defaultCoords(),
       dialog: false,
@@ -139,12 +145,10 @@ export default {
         }
         Object.assign(this.project, data)
         console.log(data)
-        Object.assign(this.center, this.project.coords)
-        this.$refs.vmap.map.panTo(this.center)
       })
       .catch(err => console.log(err.message))
     }
-  } 
+  }
 }
 </script>
 
