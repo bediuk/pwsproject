@@ -5,13 +5,26 @@
       <v-card-text>
         <v-form v-model="isTaskValid">
           <v-text-field variant="solo" label="Name" v-model="task.name" :rules="[rules.required]"></v-text-field>
-          <v-text-field variant="solo" label="Status" v-model="task.status" :rules="[rules.required, rules.validStatus]"></v-text-field>
+          <v-text-field
+            variant="solo"
+            label="Status"
+            v-model="task.status"
+            :rules="[rules.required, rules.validStatus]"
+          ></v-text-field>
           <v-select
-            v-model="this.projects" label="Projects"
-            :items="projects.map(project => ({ value: project._id, title: project.shortcut, props: { subtitle: project.name + ' ' + project.startDate.slice(0, 10) } }))"
-            chips multiple>
+            v-model="task.projects"
+            label="Projects"
+            :items="
+              projects.map((project) => ({
+                value: project._id,
+                title: project.shortcut,
+                props: { subtitle: project.name + ' ' + project.startDate.slice(0, 10) },
+              }))
+            "
+            chips
+            multiple>
           </v-select>
-            <div class="flex-container">
+          <div class="flex-container">
             <v-text-field
               variant="solo"
               label="Shortcut"
@@ -59,39 +72,46 @@ export default {
   mixins: [common],
   methods: {
     add() {
-  const task = {
+      const project_ids = this.task.projects.map(project => project.value);
+      const task = {
     name: this.task.name,
-    status: this.task.status || 0, // add status field
-    project_id: this.projectId, // use the projectId prop as the project_id value
+    status: this.task.status || 0, // Make sure a valid default value is provided if necessary
     workers: this.task.workers || [],
     color: this.task.color,
     shortcut: this.task.shortcut,
-    startDate: this.task.startDate
-
+    startDate: this.task.startDate,
+    project_ids: project_ids,
   };
-  fetch('/task', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(data.error) throw new Error(data.error)
-    this.$emit('dataChanged', data)
-  })
-  .catch(err => this.$emit('dataAccessFailed', err.message))
-},
+      fetch("/task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(task),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error);
+          this.$emit("dataChanged", data);
+        })
+        .catch((err) => this.$emit("dataAccessFailed", err.message));
+    },
 
-modify() {
+    modify() {
   const task = {
     name: this.task.name,
-    status: this.task.status || 1, // or any other valid status value
-    project_id: this.task.project_id || '', // or any other valid project_id value
-    workers: this.task.workers || [], // or any other valid array of worker ObjectId values
+    status: this.task.status,
+    workers: this.task.workers,
     color: this.task.color,
     shortcut: this.task.shortcut,
-    startDate: this.task.startDate
+    startDate: this.task.startDate,
+    project_ids: this.task.projects.filter(id => id).map(id => id), // Filter out nulls and ensure IDs are valid
   };
+
+  // Check if project_ids is empty or contains null before proceeding
+  if (!task.project_ids.length) {
+    // Handle the error: No valid project IDs provided
+    alert("Please select at least one valid project.");
+    return; // Prevent the request from being sent
+  }
   fetch("/task?_id=" + this.id, {
     method: "PUT",
     headers: {
@@ -130,33 +150,35 @@ modify() {
   data() {
     return {
       isTaskValid: false,
-      projects: [] , 
       rules: {
   required: (value) => !!value || "empty value is not allowed",
   validStartDate: (value) => !isNaN(new Date(value)) || "valid date required",
-  validProjectId: (value) => /^[0-9a-fA-F]{24}$/.test(value) || "invalid project_id format"
-},
+  requiredWorkers: (value) => value.length > 0 || "workers are required",},
+      projects: [],
       task: {
-        color: this.defaultColor(),
+      color: this.defaultColor(),
       },
       confirmation: false,
     };
   },
   mounted() {
-  if (this.id) {
-    fetch("/task?_id=" + this.id, { method: "GET" })
+    fetch("/project?limit=1000", { method: "GET" })
       .then((res) => res.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error);
+      .then((data) => (this.projects = data));
+    if (this.id) {
+      fetch("/task?_id=" + this.id, { method: "GET" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error);
 
-        Object.assign(this.task, data);
-        this.task.status = data.status || 1; // or any other valid status value
-        this.task.project_id = data.project_id || ''; // or any other valid project_id value
-        this.task.workers = data.workers || []; // or any other valid array of worker ObjectId values
-      })
-      .catch((err) => console.log(err.message));
-  }
-},
+          Object.assign(this.task, data);
+          this.task.status = data.status || 1; // or any other valid status value
+          this.task.project_id = data.project_id || ""; // or any other valid project_id value
+          this.task.workers = data.workers || []; // or any other valid array of worker ObjectId values
+        })
+        .catch((err) => console.log(err.message));
+    }
+  },
 };
 </script>
 

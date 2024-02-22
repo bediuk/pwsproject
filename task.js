@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 const person = require("./person");
-const project_id = require("./project")
 
 const schema = new mongoose.Schema({
   name: { type: String, required: true },
-  project_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
+  project_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true }], // Now an array
   status: { type: Number, required: true, enum: [0, 1, 2, 3] },
   workers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Person' }]
 }, {
@@ -28,6 +27,7 @@ module.exports = {
       model
         .findOne({ _id })
         .populate('workers')
+        .populate('project_ids') // Ensure projects are populated
         .then((data) => {
           if (data) {
             res.json(data);
@@ -56,11 +56,11 @@ module.exports = {
   },
 
   post: (req, res) => {
-    const { status, project_id, workers } = req.body;
-    if (!status || !project_id) {
-      return res.status(400).json({ error: "Both status and project_id are required." });
+    const { name, status, project_ids, workers } = req.body;
+    if (!name || !status || !project_ids || project_ids.length === 0) {
+      return res.status(400).json({ error: "Name, status, and project_ids are required." });
     }
-    const instance = new model({ status, project_id, workers });
+    const instance = new model({ name, status, project_ids, workers });
     instance
       .save()
       .then((data) => {
@@ -82,23 +82,23 @@ module.exports = {
   },
 
   put: (req, res) => {
-    const _id = req.query._id
-    const { name, status, workers, ...rest } = req.body
-    if (!name || !status || !Array.isArray(workers)) {
-      return res.status(400).json({ error: 'Invalid request body' })
+    const _id = req.query._id;
+    const { name, status, project_ids, workers, ...rest } = req.body;
+    if (!name || !status || !project_ids || !Array.isArray(workers)) {
+      return res.status(400).json({ error: 'Invalid request body' });
     }
-    const updatedTask = { name, status, workers, ...rest }
+    const updatedTask = { name, status, project_ids, workers, ...rest };
     model.findOneAndUpdate({ _id }, updatedTask, { new: true, runValidators: true })
       .then(updated => {
         if(updated) {
-          res.json(updated)
+          res.json(updated);
         } else {
-          res.status(404).json({ error: 'No such object' })
+          res.status(404).json({ error: 'No such object' });
         }
       })
       .catch(err => {
-        res.status(406).json({ error: err.message })
-      })
+        res.status(406).json({ error: err.message });
+      });
   },
 
   delete: (req, res) => {
@@ -107,8 +107,8 @@ module.exports = {
       .findOneAndDelete({ _id })
       .then((deleted) => {
         if (deleted) {
-          person
-            .getModel()
+          // Remove the task from all workers' tasks array
+          person.getModel()
             .updateMany({}, { $pull: { tasks: _id } })
             .then(() => res.json(deleted))
             .catch((err) => res.status(400).json({ error: err.message }));
