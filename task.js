@@ -48,6 +48,12 @@ module.exports = {
       let aggregation = [{ $sort: { name: 1 } }];
       aggregation.push({ $skip: parseInt(req.query.skip) || 0 });
       aggregation.push({ $limit: parseInt(req.query.limit) || 10 });
+      try {
+          let status = JSON.parse(req.query.status)
+          if(Array.isArray(status)) {
+              aggregation.push({ $match: { status: { $in: status } } })    
+          }
+      } catch(err) {}
       model
         .aggregate(aggregation)
         .then((data) => {
@@ -107,7 +113,6 @@ module.exports = {
         res.status(406).json({ error: err.message });
       });
   },
-
   delete: (req, res) => {
     const _id = req.query._id;
     model

@@ -27,6 +27,11 @@
             <VMapGoogleTileLayer/>
             <VMapZoomControl/>
           </VMap>
+          <v-select
+            v-model="project.workers" label="Persons"
+            :items="persons.map(person => ({ value: person._id, title: person.firstName, props: { subtitle: person.firstName + ' ' + person.lastName } }))"
+            chips multiple>
+          </v-select>
 
         </v-form>
       </v-card-text>
@@ -54,7 +59,6 @@ import 'vue-map-ui/dist/theme-all.css'
 import { VMap, VMapGoogleTileLayer, VMapZoomControl, VMapIconMarker } from 'vue-map-ui'
 import common from '../mixins/common'
 import ConfirmationDialog from './ConfirmationDialog.vue'
-
 export default {
   name: 'ProjectEditor',
   props: [ 'id' ],
@@ -131,10 +135,14 @@ export default {
       center: this.defaultCoords(),
       dialog: false,
       confirmation: false,
-      ready: false
+      ready: false,
+      persons: []
     }
   },
   mounted() {
+    fetch('/person?limit=1000', { method: 'GET'})
+    .then(res => res.json())
+    .then(data => this.persons = data)
     if(this.id) {
       fetch('/project?_id=' + this.id, { method: 'GET' })
       .then(res => res.json())

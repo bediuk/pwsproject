@@ -12,18 +12,35 @@
             :rules="[rules.required, rules.validStatus]"
           ></v-text-field>
           <v-select
-            v-model="task.projects"
+            v-model="task.selectedProject"
             label="Projects"
-            v-on:update:focused="onSelectProjects"
             :items="
               projects.map((project) => ({
-                value: project._id,
+                value: project,
                 title: project.shortcut,
                 props: { subtitle: project.name + ' ' + project.startDate.slice(0, 10) },
               }))
             "
             chips
-            multiple
+          >
+          </v-select>
+
+          <v-select
+            v-model="task.workers"
+            label="Persons"
+            :items="
+              task.selectedProject?.workers.map((personId) => {
+                const person = persons.filter(item => item?._id === personId)[0]
+                console.log(person)
+                return {
+                  value: person?._id,
+                  title: person?.firstName,
+                  props: { subtitle: person?.firstName + ' ' + person?.lastName },
+                }
+              })
+            "
+            chips
+            multiple=""
           >
           </v-select>
 
@@ -74,11 +91,7 @@ export default {
   emits: ["cancel", "dataChanged", "dataAccessFailed"],
   mixins: [common],
   methods: {
-    onSelectProjects() {
-      console.log("Thisisconsolelog");
-    },
     add() {
-      const project_ids = this.task.projects.map((project) => project);
       const task = {
         name: this.task.name,
         status: this.task.status || 0, // Make sure a valid default value is provided if necessary
@@ -86,7 +99,7 @@ export default {
         color: this.task.color,
         shortcut: this.task.shortcut,
         startDate: this.task.startDate,
-        project_ids: project_ids,
+        project_ids: this.task.selectedProject,
       };
       console.log(task);
       fetch("/task", {
@@ -101,7 +114,6 @@ export default {
         })
         .catch((err) => this.$emit("dataAccessFailed", err.message));
     },
-
     modify() {
       const task = {
         name: this.task.name,
@@ -110,11 +122,11 @@ export default {
         color: this.task.color,
         shortcut: this.task.shortcut,
         startDate: this.task.startDate,
-        project_ids: this.task.projects.filter((id) => id).map((id) => id), // Filter out nulls and ensure IDs are valid
+        project_ids: this.task.selectedProject, // Filter out nulls and ensure IDs are valid
       };
 
       // Check if project_ids is empty or contains null before proceeding
-      if (!task.project_ids.length) {
+      if (!task.project_ids) {
         // Handle the error: No valid project IDs provided
         alert("Please select at least one valid project.");
         return; // Prevent the request from being sent
@@ -162,7 +174,9 @@ export default {
         validStartDate: (value) => !isNaN(new Date(value)) || "valid date required",
         requiredWorkers: (value) => value.length > 0 || "workers are required",
       },
+      selectedProject: {},
       projects: [],
+      persons: [],
       task: {
         color: this.defaultColor(),
       },
@@ -170,6 +184,9 @@ export default {
     };
   },
   mounted() {
+    fetch("/person?limit=1000", { method: "GET" })
+      .then((res) => res.json())
+      .then((data) => (this.persons = data));
     fetch("/project?limit=1000", { method: "GET" })
       .then((res) => res.json())
       .then((data) => (this.projects = data));
@@ -179,10 +196,18 @@ export default {
         .then((data) => {
           if (data.error) throw new Error(data.error);
 
+          console.log(data.project_ids[0])
           Object.assign(this.task, data);
-          this.task.status = data.status || 1; // or any other valid status value
+          this.task.status = data.status || "0" // or any other valid status value
           this.task.project_id = data.project_id || ""; // or any other valid project_id value
-          this.task.workers = data.workers || []; // or any other valid array of worker ObjectId values
+
+           // HARDCODED 
+          this.task.workers = data.workers[0].firstName + ' ' + data.workers[0].lastName // HARDCODED
+          this.task.selectedProject = this.projects[0] // HARDCODED
+          // HARDCODED
+          
+          // Переписать для this.task.workers и this.task.selectedProject
+          // Когда приходят данные с бэкенда сохранять и показывать
         })
         .catch((err) => console.log(err.message));
     }

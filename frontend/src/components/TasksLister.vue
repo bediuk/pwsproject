@@ -8,6 +8,10 @@
             <v-col>
               <v-text-field variant="solo" label="Search" v-model="search" @input="retrieve"></v-text-field>
             </v-col>
+            <v-col cols="3">
+              <v-select v-model="status" label="Status" :items="[ { value: 0, title: 'PREPARATION' }, { value: 1, title: 'PENDING' }, { value: 2, title: 'IN TESTS' }, { value: 3, title: 'COMPLETED' } ]" chips multiple @update:modelValue="retrieve">
+              </v-select>
+            </v-col>
             <v-col cols="2">
               <v-text-field variant="solo" type="number" label="Skip" v-model="skip" @input="retrieve"></v-text-field>
             </v-col>
@@ -34,7 +38,7 @@
                 <v-chip :color="task.color">{{ task.shortcut }}</v-chip>
               </td>
               <td class="text-right">{{ new Date(task.startDate).toLocaleDateString() }}</td>
-              <td class="text-right">{{ task.members }}</td>
+              <td class="text-right">{{ task.workers ? task.workers.length : 0 }}</td>
             </tr>
           </tbody>
         </v-table>
@@ -63,7 +67,7 @@ export default {
     retrieve() {
       this.id = null;
       this.editor = false;
-      fetch("/task?search=" + this.search + "&skip=" + this.skip + "&limit=" + this.limit, {
+      fetch("/task?search=" + this.search + '&status=' + JSON.stringify(this.status) + "&skip=" + this.skip + "&limit=" + this.limit, {
         // Update API endpoint
         method: "GET",
       })
@@ -98,6 +102,7 @@ export default {
       search: "",
       skip: 0,
       limit: 10,
+      status: [ 0, 1, 2, 3 ],
     };
   },
   mounted() {

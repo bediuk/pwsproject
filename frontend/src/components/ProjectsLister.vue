@@ -40,7 +40,7 @@
               <td>{{ project.name }}</td>
               <td><v-chip :color="project.color">{{ project.shortcut }}</v-chip></td>
               <td class="text-right">{{ new Date(project.startDate).toLocaleDateString() }}</td>
-              <td class="text-right">{{ project.members }}</td>
+              <td class="text-right">{{ project.workers ? project.workers.length : 0 }}</td>
             </tr>
           </tbody>
         </v-table>
@@ -73,7 +73,8 @@ export default {
         method: 'GET' })
         .then((res) => {
           res.json()
-            .then((data) => {
+          .then((data) => {
+              console.log(data)
               this.projects = data
             })
             .catch(err => console.error(err.message))
@@ -97,6 +98,7 @@ export default {
     return {
       editor: false,
       projects: [],
+      persons: [],
       id: null,
       search: '',
       skip: 0,
@@ -105,6 +107,9 @@ export default {
   },
   mounted() {
     this.retrieve()
+    fetch('/person?limit=1000', { method: 'GET'})
+    .then(res => res.json())
+    .then(data => this.persons = data)
   } 
 }
 </script>
