@@ -14,6 +14,7 @@
           <v-select
             v-model="task.projects"
             label="Projects"
+            v-on:update:focused="onSelectProjects"
             :items="
               projects.map((project) => ({
                 value: project._id,
@@ -22,8 +23,10 @@
               }))
             "
             chips
-            multiple>
+            multiple
+          >
           </v-select>
+
           <div class="flex-container">
             <v-text-field
               variant="solo"
@@ -71,17 +74,21 @@ export default {
   emits: ["cancel", "dataChanged", "dataAccessFailed"],
   mixins: [common],
   methods: {
+    onSelectProjects() {
+      console.log("Thisisconsolelog");
+    },
     add() {
-      const project_ids = this.task.projects.map(project => project.value);
+      const project_ids = this.task.projects.map((project) => project);
       const task = {
-    name: this.task.name,
-    status: this.task.status || 0, // Make sure a valid default value is provided if necessary
-    workers: this.task.workers || [],
-    color: this.task.color,
-    shortcut: this.task.shortcut,
-    startDate: this.task.startDate,
-    project_ids: project_ids,
-  };
+        name: this.task.name,
+        status: this.task.status || 0, // Make sure a valid default value is provided if necessary
+        workers: this.task.workers || [],
+        color: this.task.color,
+        shortcut: this.task.shortcut,
+        startDate: this.task.startDate,
+        project_ids: project_ids,
+      };
+      console.log(task);
       fetch("/task", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,40 +103,40 @@ export default {
     },
 
     modify() {
-  const task = {
-    name: this.task.name,
-    status: this.task.status,
-    workers: this.task.workers,
-    color: this.task.color,
-    shortcut: this.task.shortcut,
-    startDate: this.task.startDate,
-    project_ids: this.task.projects.filter(id => id).map(id => id), // Filter out nulls and ensure IDs are valid
-  };
+      const task = {
+        name: this.task.name,
+        status: this.task.status,
+        workers: this.task.workers,
+        color: this.task.color,
+        shortcut: this.task.shortcut,
+        startDate: this.task.startDate,
+        project_ids: this.task.projects.filter((id) => id).map((id) => id), // Filter out nulls and ensure IDs are valid
+      };
 
-  // Check if project_ids is empty or contains null before proceeding
-  if (!task.project_ids.length) {
-    // Handle the error: No valid project IDs provided
-    alert("Please select at least one valid project.");
-    return; // Prevent the request from being sent
-  }
-  fetch("/task?_id=" + this.id, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
+      // Check if project_ids is empty or contains null before proceeding
+      if (!task.project_ids.length) {
+        // Handle the error: No valid project IDs provided
+        alert("Please select at least one valid project.");
+        return; // Prevent the request from being sent
+      }
+      fetch("/task?_id=" + this.id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error);
+          this.$emit("dataChanged", data);
+          this.cancel();
+        })
+        .catch((err) => {
+          console.error(err.message);
+          this.$emit("dataAccessFailed", err.message);
+        });
     },
-    body: JSON.stringify(task),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.error) throw new Error(data.error);
-      this.$emit("dataChanged", data);
-      this.cancel();
-    })
-    .catch((err) => {
-      console.error(err.message);
-      this.$emit("dataAccessFailed", err.message);
-    });
-},
     remove() {
       this.confirmation = true;
     },
@@ -151,12 +158,13 @@ export default {
     return {
       isTaskValid: false,
       rules: {
-  required: (value) => !!value || "empty value is not allowed",
-  validStartDate: (value) => !isNaN(new Date(value)) || "valid date required",
-  requiredWorkers: (value) => value.length > 0 || "workers are required",},
+        required: (value) => !!value || "empty value is not allowed",
+        validStartDate: (value) => !isNaN(new Date(value)) || "valid date required",
+        requiredWorkers: (value) => value.length > 0 || "workers are required",
+      },
       projects: [],
       task: {
-      color: this.defaultColor(),
+        color: this.defaultColor(),
       },
       confirmation: false,
     };
