@@ -14,6 +14,7 @@
           <v-select
             v-model="task.selectedProject"
             label="Projects"
+            v-on:update:focused="onSelectProjects"
             :items="
               projects.map((project) => ({
                 value: project,
@@ -31,7 +32,6 @@
             :items="
               task.selectedProject?.workers.map((personId) => {
                 const person = persons.filter(item => item?._id === personId)[0]
-                console.log(person)
                 return {
                   value: person?._id,
                   title: person?.firstName,
@@ -91,6 +91,9 @@ export default {
   emits: ["cancel", "dataChanged", "dataAccessFailed"],
   mixins: [common],
   methods: {
+    onSelectProjects(){
+      this.task.workers = []
+    },
     add() {
       const task = {
         name: this.task.name,
@@ -186,32 +189,45 @@ export default {
   mounted() {
     fetch("/person?limit=1000", { method: "GET" })
       .then((res) => res.json())
-      .then((data) => (this.persons = data));
-    fetch("/project?limit=1000", { method: "GET" })
+      .then((data) => {
+        (this.persons = data)
+        fetch("/project?limit=1000", { method: "GET" })
       .then((res) => res.json())
-      .then((data) => (this.projects = data));
-    if (this.id) {
-      fetch("/task?_id=" + this.id, { method: "GET" })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) throw new Error(data.error);
+      .then((data) => {
+        (this.projects = data)
+        if (this.id) {
+          fetch("/task?_id=" + this.id, { method: "GET" })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.error) throw new Error(data.error);
 
-          console.log(data.project_ids[0])
           Object.assign(this.task, data);
           this.task.status = data.status || "0" // or any other valid status value
           this.task.project_id = data.project_id || ""; // or any other valid project_id value
 
            // HARDCODED 
-          this.task.workers = data.workers[0].firstName + ' ' + data.workers[0].lastName // HARDCODED
-          this.task.selectedProject = this.projects[0] // HARDCODED
+          this.task.selectedProject = this.projects.filter(x => x._id == this.task.project_ids[0]._id)[0] // HARDCODED
           // HARDCODED
+          var selectedPerson = [];
+          this.persons.forEach(element => {
+            data.workers.forEach(elem2 =>{
+              if(elem2._id === element._id){
+                selectedPerson.push(element._id)
+              }
+            })
+          });
+          this.task.workers = selectedPerson // HARDCODED
           
           // Переписать для this.task.workers и this.task.selectedProject
           // Когда приходят данные с бэкенда сохранять и показывать
-        })
-        .catch((err) => console.log(err.message));
+            } )
+            .catch((err) => console.log(err.message));
     }
-  },
+      });
+      });
+    
+    
+  }
 };
 </script>
 
